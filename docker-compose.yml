@@ -1,0 +1,32 @@
+version: '3.8'
+
+services:
+  web:
+    build: .
+    # command: python /push_ch4/manage.py runserver 0.0.0.0:8000
+    command: gunicorn config.wsgi -b 0.0.0.0:8000 # new
+    volumes:
+      - .:/push_ch4
+    ports:
+      - 8000:8000
+    depends_on:
+      - db
+    environment:
+      - 'DJANGO_SECRET_KEY=b5#dm307h0_#so2_u(h$$5wi7y-jvmrihway^&&ee=t(zewkxa9'
+      - 'DJANGO_DEBUG=True'
+      - 'DJANGO_SECURE_SSL_REDIRECT=False'
+      - 'DJANGO_SECURE_HSTS_SECONDS=0' # new
+      - 'DJANGO_SECURE_HSTS_INCLUDE_SUBDOMAINS=False' # new
+      - 'DJANGO_SECURE_HSTS_PRELOAD=False' # new
+      - 'DJANGO_SESSION_COOKIE_SECURE=False' # new
+      - 'DJANGO_CSRF_COOKIE_SECURE=False' # new
+
+  db:
+    image: postgres:11
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    environment:
+      - 'POSTGRES_HOST_AUTH_METHOD=trust'
+
+volumes:
+  postgres_data:
